@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-suite: [petstore, reqres]
+        test-suite: [petstore, jsonplaceholder]
       fail-fast: false
 
     steps:
@@ -74,4 +74,4 @@ jobs:
           echo "| Suite | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| PetStore | ✅ Complete |" >> $GITHUB_STEP_SUMMARY
-          echo "| ReqRes | ✅ Complete |" >> $GITHUB_STEP_SUMMARY
+          echo "| JsonPlaceholder | ✅ Complete |" >> $GITHUB_STEP_SUMMARY
