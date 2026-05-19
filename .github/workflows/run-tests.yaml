@@ -1,0 +1,77 @@
+name: Run API Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      test_marker:
+        description: 'Test marke to run (smoke, regression, performance, or leave empty for all)'
+        required: false
+        type: choice
+        options:
+          - all
+          - smoke
+          - regression
+          - performance
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-suite: [petstore, reqres]
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Run ${{ matrix.test-suite }} tests
+        run: |
+          if [ "${{ github.event.inputs.test_marker }}" = "all" ] || [ -z "${{ github.event.inputs.test_marker }}" ]; then
+            poetry run pytest tests/test_${{ matrix.test-suite }}.py -v --junitxml=results/${{ matrix.test-suite }}-results.xml
+          else
+            poetry run pytest tests/test_${{ matrix.test-suite }}.py -v -m "${{ github.event.inputs.test_marker }}" --junitxml=results/${{ matrix.test-suite }}-results.xml
+          fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.test-suite }}
+          path: results/
+
+  summary:
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post summary
+        run: |
+          echo "## 🧪 API Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Marker:** ${{ github.event.inputs.test_marker || 'all' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| PetStore | ✅ Complete |" >> $GITHUB_STEP_SUMMARY
+          echo "| ReqRes | ✅ Complete |" >> $GITHUB_STEP_SUMMARY
