@@ -1,22 +1,30 @@
-## 🎓 Pragmatic AI Labs | Join 1M+ ML Engineers
+# PetStore API Tests
 
-### 🔥 Hot Course Offers:
-* 🤖 [Master GenAI Engineering](https://ds500.paiml.com/learn/course/0bbb5/) - Build Production AI Systems
-* 🦀 [Learn Professional Rust](https://ds500.paiml.com/learn/course/g6u1k/) - Industry-Grade Development
-* 📊 [AWS AI & Analytics](https://ds500.paiml.com/learn/course/31si1/) - Scale Your ML in Cloud
-* ⚡ [Production GenAI on AWS](https://ds500.paiml.com/learn/course/ehks1/) - Deploy at Enterprise Scale
-* 🛠️ [Rust DevOps Mastery](https://ds500.paiml.com/learn/course/ex8eu/) - Automate Everything
+Automated API test suite for PetStore and ReqRes APIs.
 
-### 🚀 Level Up Your Career:
-* 💼 [Production ML Program](https://paiml.com) - Complete MLOps & Cloud Mastery
-* 🎯 [Start Learning Now](https://ds500.paiml.com) - Fast-Track Your ML Career
-* 🏢 Trusted by Fortune 500 Teams
+## Setup
 
-Learn end-to-end ML engineering from industry veterans at [PAIML.COM](https://paiml.com)
+```bash
+# Install Poetry (if not installed)
+curl -sSL https://install.python-poetry.org | python3 -
 
-![Python application test with Github Actions](https://github.com/noahgift/github-actions-pytest/workflows/Python%20application%20test%20with%20Github%20Actions/badge.svg)
+# Install dependencies
+poetry install
 
-# Github Actions pytest
-Example Github Actions Project designed to show how a hello version of Github Actions testing Python code.
+# Run all tests
+poetry run pytest
 
-*Part of Duke Coursera Course:  Cloud Computing for Data*
+# Run specific markers
+poetry run pytest -m smoke
+poetry run pytest -m regression
+poetry run pytest -m performance
+
+# Run specific test file
+poetry run pytest tests/test_petstore.py
+poetry run pytest tests/test_reqres.py
+
+# Run with parallel execution
+poetry run pytest -n 4
+
+# Run with HTML report
+poetry run pytest --html=results/report.html

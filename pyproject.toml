@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "petstore-api-tests"
+version = "1.0.0"
+description = "Automated API tests for PetStore and ReqRes APIs"
+authors = ["Your Name <your-email@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.4"
+pytest-html = "^4.1.1"
+pytest-xdist = "^3.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+markers = [
+    "smoke: Quick health check tests",
+    "regression: Full regression tests",
+    "performance: Response time tests",
+]
