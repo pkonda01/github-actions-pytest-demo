@@ -1,10 +1,8 @@
 name: Run API Tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+  push:
   workflow_dispatch:
     inputs:
       test_marker:
@@ -17,8 +15,14 @@ on:
           - regression
           - performance
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
-  test:
+  build-test:
+    name: Build & Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -59,8 +63,16 @@ jobs:
           name: results-${{ matrix.test-suite }}
           path: results/
 
+      - name: Test Report
+        uses: dorny/test-reporter@v3
+        if: ${{ !cancelled() }}
+        with:
+          name: Pytest ${{ matrix.test-suite }} Tests
+          path: results/${{ matrix.test-suite }}-results.xml
+          reporter: java-junit
+
   summary:
-    needs: test
+    needs: build-test
     if: always()
     runs-on: ubuntu-latest
     steps:
